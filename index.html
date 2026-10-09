@@ -21,7 +21,7 @@
       padding: 1rem 0.75rem 2rem;
     }
 
-    /* Judul aplikasi di tengah atas */
+    /* Judul aplikasi di tengah atas — bisa diklik 3x untuk tambah kartu */
     .app-title {
       text-align: center;
       font-weight: 700;
@@ -32,6 +32,13 @@
       width: 100%;
       word-break: break-word;
       line-height: 1.2;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.15s;
+    }
+
+    .app-title:hover {
+      color: #2b6c9e;
     }
 
     /* Bento grid */
@@ -107,27 +114,6 @@
       height: 100%;
       border: 0;
       background: white;
-    }
-
-    /* placeholder jika iframe tidak bisa dimuat (fallback) */
-    .iframe-fallback {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #eef2f7;
-      color: #3a4b5e;
-      font-size: 0.9rem;
-      padding: 1rem;
-      text-align: center;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.2s;
-      z-index: 1;
     }
 
     /* Modal popup setting */
@@ -215,6 +201,11 @@
       margin-top: 1.75rem;
     }
 
+    /* Baris tombol hapus terpisah */
+    .modal-actions-delete {
+      margin-top: 1rem;
+    }
+
     .btn {
       flex: 1;
       padding: 0.9rem 1rem;
@@ -253,6 +244,65 @@
       background: #e3eaf3;
     }
 
+    .btn-danger {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .btn-danger:hover {
+      background: #fecaca;
+    }
+
+    /* Modal konfirmasi hapus */
+    .confirm-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(10, 20, 30, 0.55);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      z-index: 1100;
+      padding: 1rem;
+    }
+
+    .confirm-overlay.active {
+      display: flex;
+    }
+
+    .confirm-box {
+      background: white;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 360px;
+      padding: 1.75rem 1.5rem;
+      box-shadow: 0 25px 50px -8px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      animation: modalFadeIn 0.2s ease;
+    }
+
+    .confirm-box h4 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0b1a2b;
+      margin-bottom: 0.5rem;
+    }
+
+    .confirm-box p {
+      color: #62748c;
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.4;
+    }
+
+    .confirm-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
     /* responsive kecil */
     @media (max-width: 480px) {
       .app-title {
@@ -289,7 +339,7 @@
       grid-template-columns: repeat(2, 1fr);
     }
 
-    /* 3 kartu: 3 kolom (jika layar cukup) */
+    /* 3 kartu: 3 kolom */
     .bento-grid[data-count="3"] {
       grid-template-columns: repeat(3, 1fr);
     }
@@ -303,10 +353,6 @@
     .bento-grid[data-count="5"] {
       grid-template-columns: repeat(6, 1fr);
     }
-    .bento-grid[data-count="5"] .link-card {
-      grid-column: span 2;
-    }
-    /* 5 kartu: 3 di baris pertama, 2 di baris kedua */
     .bento-grid[data-count="5"] .link-card:nth-child(1),
     .bento-grid[data-count="5"] .link-card:nth-child(2),
     .bento-grid[data-count="5"] .link-card:nth-child(3) {
@@ -338,18 +384,10 @@
       .bento-grid[data-count="5"] .link-card:nth-child(5) {
         grid-column: span 1 !important;
       }
-      .bento-grid[data-count="2"] {
-        grid-template-columns: 1fr !important;
-      }
-      .bento-grid[data-count="3"] {
-        grid-template-columns: 1fr !important;
-      }
-      .bento-grid[data-count="4"] {
-        grid-template-columns: 1fr !important;
-      }
-      .bento-grid[data-count="5"] {
-        grid-template-columns: 1fr !important;
-      }
+      .bento-grid[data-count="2"],
+      .bento-grid[data-count="3"],
+      .bento-grid[data-count="4"],
+      .bento-grid[data-count="5"],
       .bento-grid[data-count="6"],
       .bento-grid[data-count="7"],
       .bento-grid[data-count="8"],
@@ -357,17 +395,14 @@
         grid-template-columns: 1fr !important;
       }
     }
-
-    /* tombol tambah link kecil di pojok? tidak diminta, tapi kita bisa tambahkan secara implisit lewat 3x klik header */
-    /* sudah sesuai: klik 3x header untuk edit */
   </style>
 </head>
 <body>
 
-  <h1 class="app-title">HCM Shelter Apps</h1>
+  <h1 class="app-title" id="appTitle" title="Klik 3x untuk menambah kartu baru">HCM Shelter Apps</h1>
 
   <div class="bento-grid" id="bentoGrid" data-count="1">
-    <!-- Kartu pertama (kosong) akan dirender oleh JavaScript -->
+    <!-- Kartu akan dirender oleh JavaScript -->
   </div>
 
   <!-- Modal Popup untuk edit link -->
@@ -385,11 +420,30 @@
           <label for="inputUrl">URL</label>
           <input type="url" id="inputUrl" placeholder="https://example.com" autocomplete="off" required>
         </div>
+
+        <!-- Tombol Simpan/Batal -->
         <div class="modal-actions">
           <button type="button" class="btn btn-secondary" id="cancelBtn">Batal</button>
           <button type="submit" class="btn btn-primary" id="saveBtn">Simpan</button>
         </div>
+
+        <!-- Tombol Hapus (hanya muncul jika kartu sudah memiliki data) -->
+        <div class="modal-actions modal-actions-delete" id="deleteRow" style="display: none;">
+          <button type="button" class="btn btn-danger" id="deleteBtn">Hapus Kartu Ini</button>
+        </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Modal Konfirmasi Hapus -->
+  <div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-box">
+      <h4>Hapus Kartu?</h4>
+      <p id="confirmText">Kartu ini akan dihapus permanen. Lanjutkan?</p>
+      <div class="confirm-actions">
+        <button type="button" class="btn btn-secondary" id="confirmCancel">Batal</button>
+        <button type="button" class="btn btn-danger" id="confirmDelete">Ya, Hapus</button>
+      </div>
     </div>
   </div>
 
@@ -404,6 +458,7 @@
       let editingIndex = null;
 
       // Elemen DOM
+      const appTitle = document.getElementById('appTitle');
       const bentoGrid = document.getElementById('bentoGrid');
       const modalOverlay = document.getElementById('modalOverlay');
       const modalTitle = document.getElementById('modalTitle');
@@ -411,6 +466,12 @@
       const inputJudul = document.getElementById('inputJudul');
       const inputUrl = document.getElementById('inputUrl');
       const cancelBtn = document.getElementById('cancelBtn');
+      const deleteRow = document.getElementById('deleteRow');
+      const deleteBtn = document.getElementById('deleteBtn');
+      const confirmOverlay = document.getElementById('confirmOverlay');
+      const confirmText = document.getElementById('confirmText');
+      const confirmCancel = document.getElementById('confirmCancel');
+      const confirmDelete = document.getElementById('confirmDelete');
 
       // Fungsi untuk merender semua kartu
       function renderCards() {
@@ -420,7 +481,7 @@
         // Kosongkan grid
         bentoGrid.innerHTML = '';
 
-        // Jika tidak ada link (harusnya minimal 1, tapi kita jaga)
+        // Jika tidak ada link, buat satu kartu kosong
         if (links.length === 0) {
           links.push({ judul: '', url: '' });
           bentoGrid.setAttribute('data-count', '1');
@@ -439,13 +500,11 @@
 
           const headerText = document.createElement('span');
           headerText.className = 'header-text';
-          // Tampilkan judul atau placeholder
           headerText.textContent = link.judul.trim() !== '' ? link.judul : 'Judul belum diisi';
 
           header.appendChild(headerText);
 
-          // Event listener untuk 3x klik (dblclick + click, atau hitung manual)
-          // Kita gunakan click counter sederhana
+          // Event listener untuk 3x klik
           let clickCount = 0;
           let clickTimer = null;
 
@@ -453,19 +512,16 @@
             e.stopPropagation();
             clickCount++;
 
-            // Reset timer jika sudah ada
             if (clickTimer) {
               clearTimeout(clickTimer);
             }
 
-            // Jika mencapai 3 klik dalam waktu singkat
             if (clickCount === 3) {
               clickCount = 0;
               openEditModal(index);
               return;
             }
 
-            // Reset hitungan setelah 400ms jika tidak ada klik lagi
             clickTimer = setTimeout(() => {
               clickCount = 0;
               clickTimer = null;
@@ -476,10 +532,9 @@
           const iframeContainer = document.createElement('div');
           iframeContainer.className = 'iframe-container';
 
-          // Jika URL ada, buat iframe, jika tidak tampilkan pesan kosong
+          // Jika URL ada, buat iframe
           if (link.url && link.url.trim() !== '') {
             const iframe = document.createElement('iframe');
-            // Sanitasi URL: pastikan ada protokol
             let url = link.url.trim();
             if (!/^https?:\/\//i.test(url) && !/^\/\//.test(url)) {
               url = 'https://' + url;
@@ -490,25 +545,8 @@
             iframe.setAttribute('referrerpolicy', 'no-referrer');
             iframe.allowFullscreen = true;
             iframeContainer.appendChild(iframe);
-          } else {
-            // Placeholder jika URL kosong
-            const emptyPlaceholder = document.createElement('div');
-            emptyPlaceholder.style.position = 'absolute';
-            emptyPlaceholder.style.top = '0';
-            emptyPlaceholder.style.left = '0';
-            emptyPlaceholder.style.width = '100%';
-            emptyPlaceholder.style.height = '100%';
-            emptyPlaceholder.style.display = 'flex';
-            emptyPlaceholder.style.alignItems = 'center';
-            emptyPlaceholder.style.justifyContent = 'center';
-            emptyPlaceholder.style.background = '#f0f4fa';
-            emptyPlaceholder.style.color = '#8a9aa8';
-            emptyPlaceholder.style.fontSize = '0.95rem';
-            emptyPlaceholder.style.padding = '1rem';
-            emptyPlaceholder.style.textAlign = 'center';
-            emptyPlaceholder.textContent = 'Belum ada URL. Klik 3x header untuk mengisi.';
-            iframeContainer.appendChild(emptyPlaceholder);
           }
+          // Jika URL kosong: biarkan area abu-abu polos (tanpa teks placeholder)
 
           card.appendChild(header);
           card.appendChild(iframeContainer);
@@ -525,12 +563,15 @@
         inputJudul.value = link.judul || '';
         inputUrl.value = link.url || '';
 
+        // Tampilkan tombol hapus jika kartu sudah memiliki data (judul atau URL)
+        const hasData = (link.judul && link.judul.trim() !== '') || (link.url && link.url.trim() !== '');
+        deleteRow.style.display = hasData ? 'flex' : 'none';
+
         modalOverlay.classList.add('active');
-        // fokus ke input pertama setelah modal terbuka
         setTimeout(() => inputJudul.focus(), 100);
       }
 
-      // Tutup modal
+      // Tutup modal edit
       function closeModal() {
         modalOverlay.classList.remove('active');
         editingIndex = null;
@@ -543,141 +584,122 @@
 
         const judul = inputJudul.value.trim();
         const url = inputUrl.value.trim();
-
-        // Validasi sederhana: judul tidak boleh kosong? kita isi default
         const finalJudul = judul !== '' ? judul : 'Tanpa Judul';
 
         if (editingIndex !== null && links[editingIndex]) {
-          // Update link yang ada
           links[editingIndex].judul = finalJudul;
           links[editingIndex].url = url;
-
-          // Jika url kosong, kita tetap simpan, nanti tampil placeholder
-        } else {
-          // Jika tidak ada editingIndex, berarti tambah link baru? 
-          // Tapi kita tidak memiliki tombol tambah. Namun kita bisa memanfaatkan jika ada keperluan.
-          // Untuk sekarang, kita tidak menambah link baru karena hanya edit yang diminta.
-          // Namun jika ingin menambah, bisa dikembangkan.
         }
 
         renderCards();
         closeModal();
       }
 
-      // Event listener untuk form
+      // Buka konfirmasi hapus
+      function openDeleteConfirm() {
+        if (editingIndex === null) return;
+        const link = links[editingIndex];
+        const namaKartu = (link.judul && link.judul.trim() !== '') ? `"${link.judul}"` : 'ini';
+        confirmText.textContent = `Kartu ${namaKartu} akan dihapus permanen. Lanjutkan?`;
+        confirmOverlay.classList.add('active');
+      }
+
+      // Tutup konfirmasi hapus
+      function closeDeleteConfirm() {
+        confirmOverlay.classList.remove('active');
+      }
+
+      // Eksekusi hapus kartu
+      function executeDelete() {
+        if (editingIndex === null) return;
+
+        links.splice(editingIndex, 1);
+
+        // Jika semua kartu habis, tambahkan satu kartu kosong
+        if (links.length === 0) {
+          links.push({ judul: '', url: '' });
+        }
+
+        closeDeleteConfirm();
+        closeModal();
+        renderCards();
+      }
+
+      // ===== Event Listener =====
+
+      // Form submit
       linkForm.addEventListener('submit', saveLink);
 
-      // Cancel button
+      // Tombol batal modal
       cancelBtn.addEventListener('click', closeModal);
 
-      // Klik di luar modal untuk menutup (opsional)
+      // Tombol hapus di modal
+      deleteBtn.addEventListener('click', openDeleteConfirm);
+
+      // Konfirmasi hapus
+      confirmCancel.addEventListener('click', closeDeleteConfirm);
+      confirmDelete.addEventListener('click', executeDelete);
+
+      // Klik di luar modal untuk menutup
       modalOverlay.addEventListener('click', (e) => {
-        if (e.target === modalOverlay) {
-          closeModal();
-        }
+        if (e.target === modalOverlay) closeModal();
       });
 
-      // Escape key untuk menutup modal
+      confirmOverlay.addEventListener('click', (e) => {
+        if (e.target === confirmOverlay) closeDeleteConfirm();
+      });
+
+      // Escape key
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
-          closeModal();
+        if (e.key === 'Escape') {
+          if (confirmOverlay.classList.contains('active')) {
+            closeDeleteConfirm();
+          } else if (modalOverlay.classList.contains('active')) {
+            closeModal();
+          }
         }
       });
 
-      // Inisialisasi: render kartu pertama (kosong)
+      // ===== Klik 3x pada Judul Aplikasi untuk Tambah Kartu Baru =====
+      let titleClickCount = 0;
+      let titleClickTimer = null;
+
+      appTitle.addEventListener('click', () => {
+        titleClickCount++;
+
+        if (titleClickTimer) {
+          clearTimeout(titleClickTimer);
+        }
+
+        if (titleClickCount === 3) {
+          titleClickCount = 0;
+          addNewCard();
+          return;
+        }
+
+        titleClickTimer = setTimeout(() => {
+          titleClickCount = 0;
+          titleClickTimer = null;
+        }, 400);
+      });
+
+      // Fungsi tambah kartu baru
+      function addNewCard() {
+        links.push({ judul: '', url: '' });
+        renderCards();
+
+        // Scroll ke kartu terakhir
+        setTimeout(() => {
+          const cards = bentoGrid.querySelectorAll('.link-card');
+          const lastCard = cards[cards.length - 1];
+          if (lastCard) {
+            lastCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 50);
+      }
+
+      // Inisialisasi: render kartu pertama
       renderCards();
-
-      // Fitur tambahan: memungkinkan penambahan link baru dengan cara tertentu?
-      // Tidak diminta secara eksplisit, tapi untuk memudahkan pengguna,
-      // kita bisa menambahkan tombol tersembunyi? Tidak, sesuai spesifikasi: 
-      // "Di awal ada 1 kartu kosong yang bisa di-edit." 
-      // "Untuk meng-edit atau memasukkan link baru cukup klik 3x di header"
-      // Jadi pengguna hanya bisa mengedit kartu yang ada. Untuk menambah kartu baru, 
-      // tidak ada mekanisme eksplisit. Namun kita bisa membuat jika pengguna mengosongkan judul/url? 
-      // Tidak, kita biarkan seperti itu. 
-      // Tapi untuk memenuhi "jika ada 1 maka 1 kartu ukuran penuh, jika 2 maka 2 kolom 1 baris" 
-      // maka jumlah kartu tetap. Pengguna bisa mengedit isi kartu.
-      // Untuk menambah kartu, bisa ditambahkan nanti, tapi sesuai permintaan awal sudah cukup.
-      // Namun saya beri opsi: jika pengguna mengetik sesuatu di kartu kosong dan menyimpan, tetap 1 kartu.
-      // Tidak ada penambahan jumlah kartu. 
-      // Kecuali jika kita mengizinkan penambahan lewat tombol? Tidak diminta.
-      // Biarkan seperti ini.
-
-      // Catatan: jika ingin pengguna bisa menambah kartu, bisa diimplementasikan dengan 
-      // tombol "+" di suatu tempat, tapi tidak diminta.
-
-      // Perbaikan: pastikan saat mengedit kartu kosong, placeholder hilang.
-      // Sudah ditangani.
-
-      // Memastikan grid selalu menyesuaikan jumlah link. 
-      // Karena jumlah link tetap 1, data-count tetap 1.
-
-      // Untuk memenuhi "jika ada 2 maka 2 kolom 1 baris", pengguna harus bisa menambah link.
-      // Karena itu, saya tambahkan fitur kecil: dengan mengklik 3x pada header kartu kosong 
-      // dan menyimpan, itu tetap 1 kartu. 
-      // Mungkin lebih baik jika kita izinkan penambahan kartu melalui tombol tersembunyi? 
-      // Tidak, sesuai permintaan: "Di awal ada 1 kartu kosong yang bisa di-edit." 
-      // "Untuk meng-edit atau memasukkan link baru cukup klik 3x di header untuk membuka halaman setting"
-      // Artinya, "link baru" bisa berarti mengganti isi kartu yang ada, bukan menambah kartu.
-      // Jadi kita sudah benar.
-      // Namun jika ingin menambah kartu, bisa ditambahkan nanti.
-
-      // Tapi ada sedikit kekurangan: pengguna tidak bisa menambah kartu kedua.
-      // Saya rasa lebih baik saya tambahkan cara tersembunyi: jika pengguna melakukan 3x klik 
-      // pada header kartu kosong dan mengisi, itu tetap satu kartu. 
-      // Untuk menambah kartu, bisa dengan tombol kecil di bawah grid? Tidak diminta.
-      // Saya biarkan sesuai permintaan.
-
-      // Namun, untuk memenuhi contoh "jika ada 2 maka 2 kolom 1 baris", 
-      // sebaiknya ada mekanisme penambahan. 
-      // Saya tambahkan fitur: tekan tombol "Shift + Klik" pada header untuk menambah kartu baru?
-      // Tidak, itu menyalahi aturan. 
-      // Saya akan tetap pada spesifikasi: hanya edit.
-      // Tapi pengguna bisa mengubah jumlah kartu dengan mengedit kode? Tidak.
-      // Mungkin saya bisa tambahkan tombol kecil "+" di bawah grid? Tidak diminta.
-      // Baiklah, saya tambahkan fitur tambahan: dengan mengklik 3x pada header kartu kosong,
-      // di modal ada tombol "Tambah Kartu Baru" jika sedang mengedit? Tidak.
-      // Saya serahkan pada permintaan awal. 
-      // Jika ingin menambah, pengguna bisa memodifikasi array links via console? Tidak elegan.
-      // Saya buatkan saja: di modal, jika editingIndex adalah kartu kosong (judul & url kosong), 
-      // muncul tombol "Tambah Kartu"? Tidak, itu mengubah spesifikasi.
-
-      // Akhirnya, saya putuskan untuk tetap sesuai permintaan. 
-      // Pengguna dapat mengedit satu kartu. Jika ingin lebih dari satu, bisa diubah di kode.
-      // Tapi saya beri kemudahan: klik 3x pada header kartu kosong, isi, simpan. 
-      // Lalu untuk menambah kartu kedua, tidak ada cara. 
-      // Mungkin saya tambahkan event: jika pengguna mengosongkan judul dan url lalu simpan, 
-      // tidak terjadi apa-apa. 
-      // Saya akhiri.
-
-      // Namun, melihat kembali permintaan: "Di awal ada 1 kartu kosong yang bisa di-edit." 
-      // "Ukuran kartu menyesuaikan jumlah link, contoh jika ada 1 maka 1 kartu ukuran penuh, jika 2 maka 2 kolom 1 baris"
-      // Ini mengindikasikan jumlah link bisa bertambah. 
-      // Oleh karena itu, saya perlu menambahkan mekanisme untuk menambah link baru.
-      // Saya akan tambahkan: pada modal edit, jika sedang mengedit kartu kosong (belum ada judul & url),
-      // muncul tombol "Tambah Kartu Baru" yang akan menambahkan kartu baru ke grid.
-      // Tapi itu tidak sesuai dengan "cukup klik 3x di header untuk membuka halaman setting dan bisa memasukkan URL serta judul baru"
-      // "Judul baru" bisa berarti judul untuk link baru. 
-      // Saya interpretasikan: pengguna bisa mengedit kartu yang ada, dan jika ingin menambah kartu, 
-      // bisa melalui tombol khusus. Karena tidak disebutkan, saya tambahkan tombol "+" kecil di bawah grid.
-      // Tapi itu menyalahi "cukup klik 3x di header". 
-      // Saya putuskan untuk tidak menambahkan tombol, tetapi memberikan kemampuan: 
-      // jika pengguna mengklik 3x pada header kartu kosong dan mengisi form, itu tetap satu kartu.
-      // Untuk menambah kartu kedua, pengguna bisa mengubah array links melalui konsol? Tidak user-friendly.
-
-      // Kompromi: Saya tambahkan tombol kecil "Tambah Link" di bawah grid? Tidak diminta.
-      // Saya ikuti permintaan tertulis: hanya edit. Jadi jumlah link tetap 1.
-      // Tapi contoh "jika ada 2 maka 2 kolom 1 baris" hanya ilustrasi.
-      // Saya biarkan.
-
-      // Namun, untuk keamanan, saya sertakan fungsi untuk menambah link jika diperlukan di masa depan.
-      // Tidak diekspos ke UI.
-
-      // --- Tambahan: agar demo bisa menampilkan lebih dari 1 kartu, saya inisialisasi dengan 1 kartu kosong.
-      // Pengguna dapat mengeditnya. Jika ingin mencoba 2 kartu, bisa mengubah array links di bawah ini.
-      // Saya beri komentar.
-
-      // Selesai.
     })();
   </script>
 </body>
