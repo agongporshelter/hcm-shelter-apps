@@ -21,7 +21,6 @@
       padding: 1rem 0.75rem 2rem;
     }
 
-    /* Judul aplikasi di tengah atas — bisa diklik 3x untuk tambah kartu */
     .app-title {
       text-align: center;
       font-weight: 700;
@@ -41,7 +40,6 @@
       color: #2b6c9e;
     }
 
-    /* Bento grid */
     .bento-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -49,10 +47,8 @@
       width: 100%;
       max-width: 1200px;
       margin: 0 auto;
-      transition: all 0.2s;
     }
 
-    /* Kartu link */
     .link-card {
       background: white;
       border-radius: 24px;
@@ -60,17 +56,11 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
       border: 1px solid rgba(255, 255, 255, 0.6);
       height: 100%;
       min-height: 240px;
     }
 
-    .link-card:hover {
-      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08);
-    }
-
-    /* Header (caption link) — bisa diklik 3x */
     .card-header {
       padding: 1rem 1.25rem;
       background: #ffffff;
@@ -83,21 +73,56 @@
       justify-content: space-between;
       cursor: default;
       user-select: none;
-      transition: background 0.15s;
       word-break: break-word;
       line-height: 1.35;
-    }
-
-    .card-header:active {
-      background: #f8fafd;
+      gap: 8px;
     }
 
     .card-header .header-text {
       flex: 1;
-      margin-right: 8px;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    /* Preview iframe */
+    /* Tombol hapus di header kartu */
+    .card-header .header-delete {
+      flex-shrink: 0;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: background 0.15s, color 0.15s;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .link-card:hover .header-delete,
+    .card-header .header-delete:focus {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .card-header .header-delete:hover {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    /* Untuk perangkat sentuh, tampilkan tombol hapus selalu */
+    @media (hover: none) {
+      .card-header .header-delete {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+
     .iframe-container {
       position: relative;
       flex: 1;
@@ -116,7 +141,6 @@
       background: white;
     }
 
-    /* Modal popup setting */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -141,7 +165,7 @@
       border-radius: 28px;
       width: 100%;
       max-width: 420px;
-      padding: 1.75rem 1.5rem 1.75rem;
+      padding: 1.75rem 1.5rem;
       box-shadow: 0 25px 50px -8px rgba(0, 0, 0, 0.25);
       animation: modalFadeIn 0.2s ease;
     }
@@ -174,7 +198,6 @@
       font-weight: 600;
       margin-bottom: 0.4rem;
       color: #1e2b3c;
-      letter-spacing: 0.01em;
     }
 
     .form-group input {
@@ -183,7 +206,6 @@
       border: 1.5px solid #dfe7ef;
       border-radius: 16px;
       font-size: 1rem;
-      transition: border 0.15s, box-shadow 0.15s;
       background: #fbfdff;
       font-family: inherit;
     }
@@ -201,9 +223,8 @@
       margin-top: 1.75rem;
     }
 
-    /* Baris tombol hapus terpisah */
     .modal-actions-delete {
-      margin-top: 1rem;
+      margin-top: 0.75rem;
     }
 
     .btn {
@@ -214,11 +235,11 @@
       font-size: 1rem;
       border: none;
       cursor: pointer;
-      transition: background 0.15s, transform 0.1s;
       font-family: inherit;
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      gap: 6px;
     }
 
     .btn:active {
@@ -228,7 +249,6 @@
     .btn-primary {
       background: #1e2b3c;
       color: white;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
     }
 
     .btn-primary:hover {
@@ -253,7 +273,6 @@
       background: #fecaca;
     }
 
-    /* Modal konfirmasi hapus */
     .confirm-overlay {
       display: none;
       position: fixed;
@@ -303,79 +322,32 @@
       gap: 0.75rem;
     }
 
-    /* responsive kecil */
     @media (max-width: 480px) {
-      .app-title {
-        font-size: 1.6rem;
-        margin-bottom: 1rem;
-      }
-
-      .bento-grid {
-        gap: 1rem;
-      }
-
-      .link-card {
-        border-radius: 20px;
-        min-height: 200px;
-      }
-
-      .card-header {
-        padding: 0.9rem 1rem;
-        font-size: 1rem;
-      }
-
-      .modal-content {
-        padding: 1.5rem 1.25rem;
-      }
+      .app-title { font-size: 1.6rem; }
+      .link-card { border-radius: 20px; min-height: 200px; }
+      .card-header { padding: 0.9rem 1rem; font-size: 1rem; }
+      .modal-content { padding: 1.5rem 1.25rem; }
     }
 
-    /* untuk 1 kartu: full width */
-    .bento-grid[data-count="1"] {
-      grid-template-columns: 1fr;
-    }
+    .bento-grid[data-count="1"] { grid-template-columns: 1fr; }
+    .bento-grid[data-count="2"] { grid-template-columns: repeat(2, 1fr); }
+    .bento-grid[data-count="3"] { grid-template-columns: repeat(3, 1fr); }
+    .bento-grid[data-count="4"] { grid-template-columns: repeat(2, 1fr); }
 
-    /* 2 kartu: 2 kolom */
-    .bento-grid[data-count="2"] {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    /* 3 kartu: 3 kolom */
-    .bento-grid[data-count="3"] {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    /* 4 kartu: 2x2 */
-    .bento-grid[data-count="4"] {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    /* 5 kartu: 3 + 2 */
-    .bento-grid[data-count="5"] {
-      grid-template-columns: repeat(6, 1fr);
-    }
+    .bento-grid[data-count="5"] { grid-template-columns: repeat(6, 1fr); }
     .bento-grid[data-count="5"] .link-card:nth-child(1),
     .bento-grid[data-count="5"] .link-card:nth-child(2),
-    .bento-grid[data-count="5"] .link-card:nth-child(3) {
-      grid-column: span 2;
-    }
+    .bento-grid[data-count="5"] .link-card:nth-child(3) { grid-column: span 2; }
     .bento-grid[data-count="5"] .link-card:nth-child(4),
-    .bento-grid[data-count="5"] .link-card:nth-child(5) {
-      grid-column: span 3;
-    }
+    .bento-grid[data-count="5"] .link-card:nth-child(5) { grid-column: span 3; }
 
-    /* ≥6 kartu: 3 kolom */
     .bento-grid[data-count="6"],
     .bento-grid[data-count="7"],
     .bento-grid[data-count="8"],
-    .bento-grid[data-count="9"] {
-      grid-template-columns: repeat(3, 1fr);
-    }
+    .bento-grid[data-count="9"] { grid-template-columns: repeat(3, 1fr); }
 
-    /* mobile override: semua jadi 1 kolom di bawah 600px */
     @media (max-width: 600px) {
-      .bento-grid {
-        grid-template-columns: 1fr !important;
-      }
+      .bento-grid { grid-template-columns: 1fr !important; }
       .bento-grid[data-count="5"] .link-card,
       .bento-grid[data-count="5"] .link-card:nth-child(1),
       .bento-grid[data-count="5"] .link-card:nth-child(2),
@@ -384,14 +356,10 @@
       .bento-grid[data-count="5"] .link-card:nth-child(5) {
         grid-column: span 1 !important;
       }
-      .bento-grid[data-count="2"],
-      .bento-grid[data-count="3"],
-      .bento-grid[data-count="4"],
-      .bento-grid[data-count="5"],
-      .bento-grid[data-count="6"],
-      .bento-grid[data-count="7"],
-      .bento-grid[data-count="8"],
-      .bento-grid[data-count="9"] {
+      .bento-grid[data-count="2"], .bento-grid[data-count="3"],
+      .bento-grid[data-count="4"], .bento-grid[data-count="5"],
+      .bento-grid[data-count="6"], .bento-grid[data-count="7"],
+      .bento-grid[data-count="8"], .bento-grid[data-count="9"] {
         grid-template-columns: 1fr !important;
       }
     }
@@ -399,14 +367,11 @@
 </head>
 <body>
 
-  <!-- Tooltip dihapus: atribut title tidak lagi ada -->
   <h1 class="app-title" id="appTitle">HCM Shelter Apps</h1>
 
-  <div class="bento-grid" id="bentoGrid" data-count="1">
-    <!-- Kartu akan dirender oleh JavaScript -->
-  </div>
+  <div class="bento-grid" id="bentoGrid" data-count="1"></div>
 
-  <!-- Modal Popup untuk edit link -->
+  <!-- Modal Edit -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal-content">
       <h3 id="modalTitle">Edit Link</h3>
@@ -422,16 +387,15 @@
           <input type="url" id="inputUrl" placeholder="https://example.com" autocomplete="off" required>
         </div>
 
-        <!-- Tombol Simpan/Batal -->
         <div class="modal-actions">
           <button type="button" class="btn btn-secondary" id="cancelBtn">Batal</button>
           <button type="submit" class="btn btn-primary" id="saveBtn">Simpan</button>
         </div>
       </form>
 
-      <!-- Tombol Hapus DIPINDAH KE LUAR FORM agar tidak ikut ter-submit -->
-      <div class="modal-actions modal-actions-delete" id="deleteRow" style="display: none;">
-        <button type="button" class="btn btn-danger" id="deleteBtn">Hapus Kartu Ini</button>
+      <!-- Tombol Hapus selalu tampil (jika bukan satu-satunya kartu kosong) -->
+      <div class="modal-actions modal-actions-delete" id="deleteRow">
+        <button type="button" class="btn btn-danger" id="deleteBtn">🗑️ Hapus Kartu Ini</button>
       </div>
     </div>
   </div>
@@ -450,15 +414,9 @@
 
   <script>
     (function() {
-      // Data links — default 1 kartu kosong
-      let links = [
-        { judul: '', url: '' }
-      ];
-
-      // Index kartu yang sedang diedit
+      let links = [{ judul: '', url: '' }];
       let editingIndex = null;
 
-      // Elemen DOM
       const appTitle = document.getElementById('appTitle');
       const bentoGrid = document.getElementById('bentoGrid');
       const modalOverlay = document.getElementById('modalOverlay');
@@ -474,27 +432,19 @@
       const confirmCancel = document.getElementById('confirmCancel');
       const confirmDelete = document.getElementById('confirmDelete');
 
-      // Fungsi untuk merender semua kartu
       function renderCards() {
-        // Perbarui data-count untuk styling grid
         bentoGrid.setAttribute('data-count', links.length);
-
-        // Kosongkan grid
         bentoGrid.innerHTML = '';
 
-        // Jika tidak ada link, buat satu kartu kosong
         if (links.length === 0) {
           links.push({ judul: '', url: '' });
           bentoGrid.setAttribute('data-count', '1');
         }
 
-        // Buat kartu untuk setiap link
         links.forEach((link, index) => {
           const card = document.createElement('div');
           card.className = 'link-card';
-          card.dataset.index = index;
 
-          // Header — bisa diklik 3x untuk edit
           const header = document.createElement('div');
           header.className = 'card-header';
 
@@ -502,37 +452,42 @@
           headerText.className = 'header-text';
           headerText.textContent = link.judul.trim() !== '' ? link.judul : 'Judul belum diisi';
 
-          header.appendChild(headerText);
+          // Tombol hapus cepat di header
+          const quickDelete = document.createElement('button');
+          quickDelete.className = 'header-delete';
+          quickDelete.type = 'button';
+          quickDelete.innerHTML = '🗑️';
+          quickDelete.setAttribute('aria-label', 'Hapus kartu');
+          quickDelete.addEventListener('click', (e) => {
+            e.stopPropagation();
+            editingIndex = index;
+            openDeleteConfirm();
+          });
 
-          // Event listener untuk 3x klik
+          header.appendChild(headerText);
+          header.appendChild(quickDelete);
+
+          // 3x klik header untuk edit
           let clickCount = 0;
           let clickTimer = null;
-
           header.addEventListener('click', (e) => {
-            e.stopPropagation();
+            if (e.target.closest('.header-delete')) return;
             clickCount++;
-
-            if (clickTimer) {
-              clearTimeout(clickTimer);
-            }
-
+            if (clickTimer) clearTimeout(clickTimer);
             if (clickCount === 3) {
               clickCount = 0;
               openEditModal(index);
               return;
             }
-
             clickTimer = setTimeout(() => {
               clickCount = 0;
               clickTimer = null;
             }, 400);
           });
 
-          // Container iframe
           const iframeContainer = document.createElement('div');
           iframeContainer.className = 'iframe-container';
 
-          // Jika URL ada, buat iframe
           if (link.url && link.url.trim() !== '') {
             const iframe = document.createElement('iframe');
             let url = link.url.trim();
@@ -546,7 +501,6 @@
             iframe.allowFullscreen = true;
             iframeContainer.appendChild(iframe);
           }
-          // Jika URL kosong: biarkan area abu-abu polos
 
           card.appendChild(header);
           card.appendChild(iframeContainer);
@@ -554,7 +508,6 @@
         });
       }
 
-      // Buka modal untuk edit index tertentu
       function openEditModal(index) {
         editingIndex = index;
         const link = links[index] || { judul: '', url: '' };
@@ -563,29 +516,28 @@
         inputJudul.value = link.judul || '';
         inputUrl.value = link.url || '';
 
-        // Tampilkan tombol hapus JIKA kartu sudah memiliki data nyata
-        // (judul bukan placeholder default dan/atau URL terisi)
-        const adaJudul = link.judul && link.judul.trim() !== '' && link.judul !== 'Tanpa Judul';
-        const adaUrl = link.url && link.url.trim() !== '';
-        const hasData = adaJudul || adaUrl;
+        // Sembunyikan tombol hapus HANYA jika kartu ini satu-satunya DAN masih kosong
+        const hanyaSatuKartu = links.length === 1;
+        const kartuKosong = (!link.judul || link.judul.trim() === '') && (!link.url || link.url.trim() === '');
 
-        deleteRow.style.display = hasData ? 'block' : 'none';
+        if (hanyaSatuKartu && kartuKosong) {
+          deleteRow.style.display = 'none';
+        } else {
+          deleteRow.style.display = 'block';
+        }
 
         modalOverlay.classList.add('active');
         setTimeout(() => inputJudul.focus(), 100);
       }
 
-      // Tutup modal edit
       function closeModal() {
         modalOverlay.classList.remove('active');
         editingIndex = null;
         linkForm.reset();
       }
 
-      // Simpan data dari form
       function saveLink(e) {
         e.preventDefault();
-
         const judul = inputJudul.value.trim();
         const url = inputUrl.value.trim();
         const finalJudul = judul !== '' ? judul : 'Tanpa Judul';
@@ -599,111 +551,78 @@
         closeModal();
       }
 
-      // Buka konfirmasi hapus
       function openDeleteConfirm() {
         if (editingIndex === null) return;
         const link = links[editingIndex];
-        const namaKartu = (link.judul && link.judul.trim() !== '' && link.judul !== 'Tanpa Judul')
+        const nama = (link.judul && link.judul.trim() !== '' && link.judul !== 'Tanpa Judul')
           ? `"${link.judul}"`
           : 'ini';
-        confirmText.textContent = `Kartu ${namaKartu} akan dihapus permanen. Lanjutkan?`;
+        confirmText.textContent = `Kartu ${nama} akan dihapus permanen. Lanjutkan?`;
         confirmOverlay.classList.add('active');
       }
 
-      // Tutup konfirmasi hapus
       function closeDeleteConfirm() {
         confirmOverlay.classList.remove('active');
       }
 
-      // Eksekusi hapus kartu
       function executeDelete() {
         if (editingIndex === null) return;
-
         links.splice(editingIndex, 1);
-
-        // Jika semua kartu habis, tambahkan satu kartu kosong
         if (links.length === 0) {
           links.push({ judul: '', url: '' });
         }
-
         closeDeleteConfirm();
         closeModal();
         renderCards();
       }
 
-      // ===== Event Listener =====
-
-      // Form submit
       linkForm.addEventListener('submit', saveLink);
-
-      // Tombol batal modal
       cancelBtn.addEventListener('click', closeModal);
-
-      // Tombol hapus di modal (di luar form, jadi aman)
       deleteBtn.addEventListener('click', openDeleteConfirm);
-
-      // Konfirmasi hapus
       confirmCancel.addEventListener('click', closeDeleteConfirm);
       confirmDelete.addEventListener('click', executeDelete);
 
-      // Klik di luar modal untuk menutup
       modalOverlay.addEventListener('click', (e) => {
         if (e.target === modalOverlay) closeModal();
       });
-
       confirmOverlay.addEventListener('click', (e) => {
         if (e.target === confirmOverlay) closeDeleteConfirm();
       });
 
-      // Escape key
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
-          if (confirmOverlay.classList.contains('active')) {
-            closeDeleteConfirm();
-          } else if (modalOverlay.classList.contains('active')) {
-            closeModal();
-          }
+          if (confirmOverlay.classList.contains('active')) closeDeleteConfirm();
+          else if (modalOverlay.classList.contains('active')) closeModal();
         }
       });
 
-      // ===== Klik 3x pada Judul Aplikasi untuk Tambah Kartu Baru =====
+      // 3x klik judul untuk tambah kartu
       let titleClickCount = 0;
       let titleClickTimer = null;
-
       appTitle.addEventListener('click', () => {
         titleClickCount++;
-
-        if (titleClickTimer) {
-          clearTimeout(titleClickTimer);
-        }
-
+        if (titleClickTimer) clearTimeout(titleClickTimer);
         if (titleClickCount === 3) {
           titleClickCount = 0;
           addNewCard();
           return;
         }
-
         titleClickTimer = setTimeout(() => {
           titleClickCount = 0;
           titleClickTimer = null;
         }, 400);
       });
 
-      // Fungsi tambah kartu baru
       function addNewCard() {
         links.push({ judul: '', url: '' });
         renderCards();
-
         setTimeout(() => {
           const cards = bentoGrid.querySelectorAll('.link-card');
           const lastCard = cards[cards.length - 1];
-          if (lastCard) {
-            lastCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
+          if (lastCard) lastCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 50);
       }
 
-      // Inisialisasi: render kartu pertama
       renderCards();
     })();
   </script>
