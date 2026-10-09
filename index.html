@@ -399,7 +399,8 @@
 </head>
 <body>
 
-  <h1 class="app-title" id="appTitle" title="Klik 3x untuk menambah kartu baru">HCM Shelter Apps</h1>
+  <!-- Tooltip dihapus: atribut title tidak lagi ada -->
+  <h1 class="app-title" id="appTitle">HCM Shelter Apps</h1>
 
   <div class="bento-grid" id="bentoGrid" data-count="1">
     <!-- Kartu akan dirender oleh JavaScript -->
@@ -426,12 +427,12 @@
           <button type="button" class="btn btn-secondary" id="cancelBtn">Batal</button>
           <button type="submit" class="btn btn-primary" id="saveBtn">Simpan</button>
         </div>
-
-        <!-- Tombol Hapus (hanya muncul jika kartu sudah memiliki data) -->
-        <div class="modal-actions modal-actions-delete" id="deleteRow" style="display: none;">
-          <button type="button" class="btn btn-danger" id="deleteBtn">Hapus Kartu Ini</button>
-        </div>
       </form>
+
+      <!-- Tombol Hapus DIPINDAH KE LUAR FORM agar tidak ikut ter-submit -->
+      <div class="modal-actions modal-actions-delete" id="deleteRow" style="display: none;">
+        <button type="button" class="btn btn-danger" id="deleteBtn">Hapus Kartu Ini</button>
+      </div>
     </div>
   </div>
 
@@ -496,7 +497,6 @@
           // Header — bisa diklik 3x untuk edit
           const header = document.createElement('div');
           header.className = 'card-header';
-          header.setAttribute('title', 'Klik 3x untuk edit');
 
           const headerText = document.createElement('span');
           headerText.className = 'header-text';
@@ -546,7 +546,7 @@
             iframe.allowFullscreen = true;
             iframeContainer.appendChild(iframe);
           }
-          // Jika URL kosong: biarkan area abu-abu polos (tanpa teks placeholder)
+          // Jika URL kosong: biarkan area abu-abu polos
 
           card.appendChild(header);
           card.appendChild(iframeContainer);
@@ -563,9 +563,13 @@
         inputJudul.value = link.judul || '';
         inputUrl.value = link.url || '';
 
-        // Tampilkan tombol hapus jika kartu sudah memiliki data (judul atau URL)
-        const hasData = (link.judul && link.judul.trim() !== '') || (link.url && link.url.trim() !== '');
-        deleteRow.style.display = hasData ? 'flex' : 'none';
+        // Tampilkan tombol hapus JIKA kartu sudah memiliki data nyata
+        // (judul bukan placeholder default dan/atau URL terisi)
+        const adaJudul = link.judul && link.judul.trim() !== '' && link.judul !== 'Tanpa Judul';
+        const adaUrl = link.url && link.url.trim() !== '';
+        const hasData = adaJudul || adaUrl;
+
+        deleteRow.style.display = hasData ? 'block' : 'none';
 
         modalOverlay.classList.add('active');
         setTimeout(() => inputJudul.focus(), 100);
@@ -599,7 +603,9 @@
       function openDeleteConfirm() {
         if (editingIndex === null) return;
         const link = links[editingIndex];
-        const namaKartu = (link.judul && link.judul.trim() !== '') ? `"${link.judul}"` : 'ini';
+        const namaKartu = (link.judul && link.judul.trim() !== '' && link.judul !== 'Tanpa Judul')
+          ? `"${link.judul}"`
+          : 'ini';
         confirmText.textContent = `Kartu ${namaKartu} akan dihapus permanen. Lanjutkan?`;
         confirmOverlay.classList.add('active');
       }
@@ -633,7 +639,7 @@
       // Tombol batal modal
       cancelBtn.addEventListener('click', closeModal);
 
-      // Tombol hapus di modal
+      // Tombol hapus di modal (di luar form, jadi aman)
       deleteBtn.addEventListener('click', openDeleteConfirm);
 
       // Konfirmasi hapus
@@ -688,7 +694,6 @@
         links.push({ judul: '', url: '' });
         renderCards();
 
-        // Scroll ke kartu terakhir
         setTimeout(() => {
           const cards = bentoGrid.querySelectorAll('.link-card');
           const lastCard = cards[cards.length - 1];
