@@ -85,7 +85,7 @@
       text-overflow: ellipsis;
     }
 
-    /* Tombol hapus di header kartu */
+    /* Tombol hapus cepat di header kartu */
     .card-header .header-delete {
       flex-shrink: 0;
       width: 30px;
@@ -115,7 +115,6 @@
       color: #b91c1c;
     }
 
-    /* Untuk perangkat sentuh, tampilkan tombol hapus selalu */
     @media (hover: none) {
       .card-header .header-delete {
         opacity: 1;
@@ -175,11 +174,53 @@
       to { opacity: 1; transform: scale(1); }
     }
 
-    .modal-content h3 {
+    /* Header modal: judul kiri, tombol hapus kanan */
+    .modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 0.25rem;
+    }
+
+    .modal-header h3 {
       font-size: 1.5rem;
       font-weight: 700;
-      margin-bottom: 0.25rem;
       color: #0b1a2b;
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* Tombol hapus di sudut kanan atas dialog */
+    .modal-delete-icon {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: #fee2e2;
+      color: #b91c1c;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: background 0.15s, transform 0.1s;
+      margin-top: 2px;
+    }
+
+    .modal-delete-icon:hover {
+      background: #fecaca;
+    }
+
+    .modal-delete-icon:active {
+      transform: scale(0.94);
+    }
+
+    .modal-delete-icon:disabled {
+      background: #f1f5f9;
+      color: #cbd5e1;
+      cursor: not-allowed;
     }
 
     .modal-content .subhead {
@@ -221,10 +262,6 @@
       display: flex;
       gap: 0.75rem;
       margin-top: 1.75rem;
-    }
-
-    .modal-actions-delete {
-      margin-top: 0.75rem;
     }
 
     .btn {
@@ -327,6 +364,8 @@
       .link-card { border-radius: 20px; min-height: 200px; }
       .card-header { padding: 0.9rem 1rem; font-size: 1rem; }
       .modal-content { padding: 1.5rem 1.25rem; }
+      .modal-header h3 { font-size: 1.3rem; }
+      .modal-delete-icon { width: 32px; height: 32px; }
     }
 
     .bento-grid[data-count="1"] { grid-template-columns: 1fr; }
@@ -374,7 +413,13 @@
   <!-- Modal Edit -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal-content">
-      <h3 id="modalTitle">Edit Link</h3>
+
+      <!-- Header modal: judul di kiri, tombol hapus di kanan atas -->
+      <div class="modal-header">
+        <h3 id="modalTitle">Edit Link</h3>
+        <button type="button" class="modal-delete-icon" id="deleteBtn" aria-label="Hapus kartu" title="Hapus kartu ini">🗑️</button>
+      </div>
+
       <p class="subhead">Masukkan URL dan judul untuk kartu ini</p>
 
       <form id="linkForm">
@@ -392,11 +437,6 @@
           <button type="submit" class="btn btn-primary" id="saveBtn">Simpan</button>
         </div>
       </form>
-
-      <!-- Tombol Hapus selalu tampil (jika bukan satu-satunya kartu kosong) -->
-      <div class="modal-actions modal-actions-delete" id="deleteRow">
-        <button type="button" class="btn btn-danger" id="deleteBtn">🗑️ Hapus Kartu Ini</button>
-      </div>
     </div>
   </div>
 
@@ -425,7 +465,6 @@
       const inputJudul = document.getElementById('inputJudul');
       const inputUrl = document.getElementById('inputUrl');
       const cancelBtn = document.getElementById('cancelBtn');
-      const deleteRow = document.getElementById('deleteRow');
       const deleteBtn = document.getElementById('deleteBtn');
       const confirmOverlay = document.getElementById('confirmOverlay');
       const confirmText = document.getElementById('confirmText');
@@ -452,7 +491,7 @@
           headerText.className = 'header-text';
           headerText.textContent = link.judul.trim() !== '' ? link.judul : 'Judul belum diisi';
 
-          // Tombol hapus cepat di header
+          // Tombol hapus cepat di header kartu
           const quickDelete = document.createElement('button');
           quickDelete.className = 'header-delete';
           quickDelete.type = 'button';
@@ -516,14 +555,16 @@
         inputJudul.value = link.judul || '';
         inputUrl.value = link.url || '';
 
-        // Sembunyikan tombol hapus HANYA jika kartu ini satu-satunya DAN masih kosong
+        // Nonaktifkan tombol hapus jika ini satu-satunya kartu DAN masih kosong
         const hanyaSatuKartu = links.length === 1;
         const kartuKosong = (!link.judul || link.judul.trim() === '') && (!link.url || link.url.trim() === '');
 
         if (hanyaSatuKartu && kartuKosong) {
-          deleteRow.style.display = 'none';
+          deleteBtn.disabled = true;
+          deleteBtn.title = 'Tidak bisa menghapus satu-satunya kartu kosong';
         } else {
-          deleteRow.style.display = 'block';
+          deleteBtn.disabled = false;
+          deleteBtn.title = 'Hapus kartu ini';
         }
 
         modalOverlay.classList.add('active');
