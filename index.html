@@ -11,26 +11,77 @@
       padding: 0;
     }
 
+    html, body {
+      min-height: 100%;
+    }
+
     body {
       font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-      background: #f4f6fb;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 1rem 0.75rem 2rem;
+      padding: 0 0.75rem 2rem;
+      position: relative;
+
+      /* Background statis */
+      background-image: url('background shelter.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
     }
 
+    /* Lapisan overlay tipis agar konten tetap terbaca */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.15);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ===== Header sticky: logo kiri, judul tengah, tagline kanan ===== */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      width: 100%;
+      max-width: 1200px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.85rem 0.5rem;
+      margin-bottom: 1.5rem;
+
+      /* Latar semi transparan agar teks tetap terbaca saat scroll */
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 4px 16px rgba(10, 30, 70, 0.08);
+    }
+
+    /* Logo kiri */
+    .header-logo {
+      height: 38px;
+      width: auto;
+      display: block;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    /* Judul di tengah */
     .app-title {
       text-align: center;
       font-weight: 700;
-      font-size: 1.8rem;
+      font-size: 1.7rem;
       letter-spacing: -0.02em;
-      color: #1e2b3c;
-      margin: 0.5rem 0 1.5rem;
-      width: 100%;
+      color: #12275c;
       word-break: break-word;
-      line-height: 1.2;
+      line-height: 1.15;
       cursor: pointer;
       user-select: none;
       transition: color 0.15s;
@@ -40,6 +91,17 @@
       color: #2b6c9e;
     }
 
+    /* Tagline kanan */
+    .header-tagline {
+      height: 22px;
+      width: auto;
+      display: block;
+      user-select: none;
+      -webkit-user-drag: none;
+      justify-self: end;
+    }
+
+    /* ===== Bento grid ===== */
     .bento-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -47,12 +109,14 @@
       width: 100%;
       max-width: 1200px;
       margin: 0 auto;
+      position: relative;
+      z-index: 1;
     }
 
     .link-card {
       background: white;
       border-radius: 24px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05), 0 2px 6px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -85,7 +149,6 @@
       text-overflow: ellipsis;
     }
 
-    /* Tombol hapus cepat di header kartu */
     .card-header .header-delete {
       flex-shrink: 0;
       width: 30px;
@@ -99,7 +162,7 @@
       align-items: center;
       justify-content: center;
       font-size: 1rem;
-      transition: background 0.15s, color 0.15s;
+      transition: background 0.15s, color 0.15s, opacity 0.15s;
       opacity: 0;
       pointer-events: none;
     }
@@ -140,6 +203,7 @@
       background: white;
     }
 
+    /* ===== Modal ===== */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -174,7 +238,6 @@
       to { opacity: 1; transform: scale(1); }
     }
 
-    /* Header modal: judul kiri, tombol hapus kanan */
     .modal-header {
       display: flex;
       align-items: flex-start;
@@ -191,7 +254,6 @@
       min-width: 0;
     }
 
-    /* Tombol hapus di sudut kanan atas dialog */
     .modal-delete-icon {
       flex-shrink: 0;
       width: 36px;
@@ -359,8 +421,36 @@
       gap: 0.75rem;
     }
 
+    /* ===== Responsive ===== */
+    @media (max-width: 640px) {
+      .app-header {
+        grid-template-columns: auto 1fr;
+        grid-template-areas:
+          "logo tagline"
+          "title title";
+        gap: 0.5rem 0.75rem;
+        padding: 0.75rem 0.5rem;
+        border-radius: 0 0 16px 16px;
+      }
+
+      .header-logo {
+        grid-area: logo;
+        height: 30px;
+      }
+
+      .header-tagline {
+        grid-area: tagline;
+        height: 16px;
+      }
+
+      .app-title {
+        grid-area: title;
+        font-size: 1.4rem;
+        margin-top: 0.25rem;
+      }
+    }
+
     @media (max-width: 480px) {
-      .app-title { font-size: 1.6rem; }
       .link-card { border-radius: 20px; min-height: 200px; }
       .card-header { padding: 0.9rem 1rem; font-size: 1rem; }
       .modal-content { padding: 1.5rem 1.25rem; }
@@ -406,15 +496,20 @@
 </head>
 <body>
 
-  <h1 class="app-title" id="appTitle">HCM Shelter Apps</h1>
+  <!-- ===== Header sticky: logo kiri, judul tengah, tagline kanan ===== -->
+  <header class="app-header">
+    <img src="shelter-blue.png" alt="Shelter Logo" class="header-logo">
+    <h1 class="app-title" id="appTitle">HCM Shelter Apps</h1>
+    <img src="where human capital & technology converge tagline biru.png"
+         alt="Where Human Capital & Technology Converge"
+         class="header-tagline">
+  </header>
 
   <div class="bento-grid" id="bentoGrid" data-count="1"></div>
 
   <!-- Modal Edit -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal-content">
-
-      <!-- Header modal: judul di kiri, tombol hapus di kanan atas -->
       <div class="modal-header">
         <h3 id="modalTitle">Edit Link</h3>
         <button type="button" class="modal-delete-icon" id="deleteBtn" aria-label="Hapus kartu" title="Hapus kartu ini">🗑️</button>
@@ -491,7 +586,6 @@
           headerText.className = 'header-text';
           headerText.textContent = link.judul.trim() !== '' ? link.judul : 'Judul belum diisi';
 
-          // Tombol hapus cepat di header kartu
           const quickDelete = document.createElement('button');
           quickDelete.className = 'header-delete';
           quickDelete.type = 'button';
@@ -506,7 +600,6 @@
           header.appendChild(headerText);
           header.appendChild(quickDelete);
 
-          // 3x klik header untuk edit
           let clickCount = 0;
           let clickTimer = null;
           header.addEventListener('click', (e) => {
@@ -555,7 +648,6 @@
         inputJudul.value = link.judul || '';
         inputUrl.value = link.url || '';
 
-        // Nonaktifkan tombol hapus jika ini satu-satunya kartu DAN masih kosong
         const hanyaSatuKartu = links.length === 1;
         const kartuKosong = (!link.judul || link.judul.trim() === '') && (!link.url || link.url.trim() === '');
 
@@ -637,7 +729,6 @@
         }
       });
 
-      // 3x klik judul untuk tambah kartu
       let titleClickCount = 0;
       let titleClickTimer = null;
       appTitle.addEventListener('click', () => {
