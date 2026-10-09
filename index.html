@@ -25,7 +25,7 @@
       position: relative;
 
       /* Background statis */
-      background-image: url('background shelter.png');
+      background-image: url('shelter.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -56,7 +56,6 @@
       padding: 0.85rem 0.5rem;
       margin-bottom: 1.5rem;
 
-      /* Latar semi transparan agar teks tetap terbaca saat scroll */
       background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
@@ -64,20 +63,20 @@
       box-shadow: 0 4px 16px rgba(10, 30, 70, 0.08);
     }
 
-    /* Logo kiri */
+    /* Logo kiri — diperkecil 50% (dari 38px ke 19px) */
     .header-logo {
-      height: 38px;
+      height: 19px;
       width: auto;
       display: block;
       user-select: none;
       -webkit-user-drag: none;
     }
 
-    /* Judul di tengah */
+    /* Judul di tengah — diperbesar 155% (dari 1.7rem ke 2.635rem) */
     .app-title {
       text-align: center;
       font-weight: 700;
-      font-size: 1.7rem;
+      font-size: 2.635rem;
       letter-spacing: -0.02em;
       color: #12275c;
       word-break: break-word;
@@ -91,9 +90,9 @@
       color: #2b6c9e;
     }
 
-    /* Tagline kanan */
+    /* Tagline kanan — diperkecil 50% (dari 22px ke 11px) */
     .header-tagline {
-      height: 22px;
+      height: 11px;
       width: auto;
       display: block;
       user-select: none;
@@ -147,42 +146,6 @@
       min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
-    }
-
-    .card-header .header-delete {
-      flex-shrink: 0;
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      border: none;
-      background: transparent;
-      color: #94a3b8;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      transition: background 0.15s, color 0.15s, opacity 0.15s;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .link-card:hover .header-delete,
-    .card-header .header-delete:focus {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .card-header .header-delete:hover {
-      background: #fee2e2;
-      color: #b91c1c;
-    }
-
-    @media (hover: none) {
-      .card-header .header-delete {
-        opacity: 1;
-        pointer-events: auto;
-      }
     }
 
     .iframe-container {
@@ -435,17 +398,17 @@
 
       .header-logo {
         grid-area: logo;
-        height: 30px;
+        height: 16px;
       }
 
       .header-tagline {
         grid-area: tagline;
-        height: 16px;
+        height: 9px;
       }
 
       .app-title {
         grid-area: title;
-        font-size: 1.4rem;
+        font-size: 1.9rem;
         margin-top: 0.25rem;
       }
     }
@@ -586,24 +549,12 @@
           headerText.className = 'header-text';
           headerText.textContent = link.judul.trim() !== '' ? link.judul : 'Judul belum diisi';
 
-          const quickDelete = document.createElement('button');
-          quickDelete.className = 'header-delete';
-          quickDelete.type = 'button';
-          quickDelete.innerHTML = '🗑️';
-          quickDelete.setAttribute('aria-label', 'Hapus kartu');
-          quickDelete.addEventListener('click', (e) => {
-            e.stopPropagation();
-            editingIndex = index;
-            openDeleteConfirm();
-          });
-
           header.appendChild(headerText);
-          header.appendChild(quickDelete);
 
+          // 3x klik header untuk edit
           let clickCount = 0;
           let clickTimer = null;
-          header.addEventListener('click', (e) => {
-            if (e.target.closest('.header-delete')) return;
+          header.addEventListener('click', () => {
             clickCount++;
             if (clickTimer) clearTimeout(clickTimer);
             if (clickCount === 3) {
